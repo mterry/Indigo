@@ -1,0 +1,56 @@
+Form definitions
+================
+These are the form definitions that the unit tests will be built on for adding
+  and creating objects in the Indigo app.
+
+User Auth forms:
+----------------
+- login:
+  - textfield: username or email
+  - passwordfield: password
+
+- logout:
+
+- create user:
+  - textfield: first name
+  - textfield: last name
+  - textfield: username
+  - emailfield: email
+  - passwordfield: password
+
+Project handling forms
+- create project:
+  - textfield: name
+  - textfield: description
+  - textfield: task point timescale in hours/point
+
+- add collaborators:
+  - textfield: username
+
+- modify collaborators:
+  - textfield: username
+
+- remove collaborators:
+  - for c in collaborators
+    - checkboxfield: c.username
+
+- modify project:
+  - textfield: name
+  - textfield: description
+  - textfield: task point timescale in hours/point
+  - for all c in collaborators
+    - optionbox: c.username is new owner
+
+- delete project:
+  - for all p in projects where owner=current_user
+    - optionbox: delete p.name
+
+Iteration handling forms
+- add iteration
+  - textfield: name
+
+- modify iteration
+  - textfield: name
+
+- delete iteration
+  - 

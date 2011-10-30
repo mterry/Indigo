@@ -7,6 +7,7 @@ class Project(models.Model):
   velocity = models.IntegerField()
   task_point_timescale = models.PositiveIntegerField()
   collaborators = models.ManyToManyField(User)
+  owner = models.ForeignKey(User)
 
   def __unicode__(self):
     return self.name
