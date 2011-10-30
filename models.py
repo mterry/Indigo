@@ -21,6 +21,7 @@ class Iteration(models.Model):
     return self.name
 
 class Task(models.Model):
+  number = models.PositiveIntegerField()
   name = models.CharField(max_length=50)
   description = models.TextField()
   points = models.PositiveIntegerField()
