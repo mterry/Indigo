@@ -22,6 +22,7 @@ class Iteration(models.Model):
 
 class Task(models.Model):
   name = models.CharField(max_length=50)
+  number = models.PositiveIntegerField()
   description = models.TextField()
   points = models.PositiveIntegerField()
   assigned_to = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
