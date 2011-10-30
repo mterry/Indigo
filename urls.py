@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('indigo.views',
+	url(r'^/', 'index'),
     # Examples:
     # url(r'^/', 'main'),
     # url(r'^login/', 'user_auth', name='login'),
