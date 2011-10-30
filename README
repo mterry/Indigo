@@ -1,0 +1,11 @@
+NAME:   Project Indigo App
+DESC:   Project Indigo is an "agile" development model task management service
+        built on the Django web development framework. 
+DATEC:  11-10-27
+DATER:  11-10-29
+
+Revision History
+----------------
+11-10-29:
+  - Initial commit to github. Rough outline of the models are created, and the
+    url-conf has begun to be built.
