@@ -1,0 +1,57 @@
+#page
+{
+	width: 800px;
+	margin: 0px auto;
+	border: 2px solid black;
+}
+
+#header
+{
+	width: 360px;
+	margin: 8px auto;
+	border: 1px solid black;
+
+	text-align: center;
+}
+#header p
+{
+	font-style: italic;
+}
+
+#menu
+{
+	border: 1px solid #00B8F5;
+}
+#menu ul
+{
+	list-style-type: none;	
+	margin: 0;
+	padding: 0 12px;
+}
+#menu li
+{
+	margin: 1px 10px;
+	padding: 2px;
+	display: inline;
+}
+#menu li.selected, #menu li.selected:hover
+{
+	background-color: #00B8F5;
+}
+#menu li a, #menu li.selected
+{
+	color: black;
+}
+#menu li:hover
+{
+	background-color: #33CCFF;
+}
+#menu li:hover a
+{
+	text-decoration: none;
+}
+
+#content
+{
+	padding: 10px;
+}
