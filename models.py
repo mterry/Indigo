@@ -7,6 +7,7 @@ class Project(models.Model):
   velocity = models.IntegerField()
   task_point_timescale = models.PositiveIntegerField()
   collaborators = models.ManyToManyField(User)
+  owner = models.ForeignKey(User)
 
   def __unicode__(self):
     return self.name
@@ -22,6 +23,7 @@ class Iteration(models.Model):
 
 class Task(models.Model):
   name = models.CharField(max_length=50)
+  number = models.PositiveIntegerField()
   description = models.TextField()
   points = models.PositiveIntegerField()
   assigned_to = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
