@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('indigo.views',
-	url(r'^/$', 'index'),
-	url(r'^/projects/(?P<filter_type>.*)$', 'projects_list'),
-	url(r'^/add_project/(?P<name>.*)$', 'create_project'),
+	url(r'^$', 'index'),
+	url(r'^projects/(?P<filter_type>.*)$', 'projects_list'),
+	url(r'^add_project/(?P<name>.*)$', 'create_project'),
 
     # Examples:
     # url(r'^/', 'main'),
