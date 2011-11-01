@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -28,7 +28,7 @@ class Iteration(models.Model):
     return self.name
 
   def is_overdue(self):
-    return (date.today > due_date)
+    return (date.today() > due_date)
 
   def is_finished(self):
     return finished
