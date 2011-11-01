@@ -72,3 +72,21 @@ def create_project(request):
     form = CreateProjectForm()
 
   return render_to_response('create_project.html', {'form': form})
+
+def create_iteration(request):
+  if request.method == 'POST':
+    form = CreateIterationForm(request.POST)
+    if form.is_valid():
+      clean_data = form.cleaned_data
+      iteration = Iteration(name=clean_data['name'],
+        number=clean_data['number']
+      )
+      iteration.save()
+      # TODO: What is the path for this redirection? I.e. how do we redirect the
+      # user to the newly created iteration?
+      return HttpResponseRedirect('')
+
+  else:
+    form = CreateIterationForm()
+
+  return render_to_response('create_iteration.html', {'form': form})

@@ -8,6 +8,7 @@ class CreateProjectForm(forms.Form):
 
 class CreateIterationForm(forms.Form):
   name = forms.CharField(max_length=50, required=False)
+  number = forms.IntegerField(min_value=1, required=True)
 
 class CreateTaskForm(forms.Form):
   name = forms.CharField(max_length=50, required=True)
