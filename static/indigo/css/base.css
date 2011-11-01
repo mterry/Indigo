@@ -46,12 +46,19 @@
 {
 	background-color: #33CCFF;
 }
-#menu li:hover a
-{
-	text-decoration: none;
-}
 
 #content
 {
 	padding: 10px;
+}
+
+a
+{
+	text-decoration: none;
+	color: black;
+}
+
+a:hover
+{
+	text-decoration: underline;
 }
