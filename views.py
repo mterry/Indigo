@@ -90,9 +90,10 @@ def create_project(request):
 def create_iteration(request, project_id):
   if request.method == 'POST':
     form = CreateIterationForm(request.POST)
+    p = get_object_or_404(Project, id=project_id)
 
     if request.user.is_authenticated() and
-       request.user.id in Project.objects.get(id=project_id):
+       request.user.id in p.get_collaborators():
 
       if form.is_valid():
         clean_data = form.cleaned_data
@@ -110,12 +111,14 @@ def create_iteration(request, project_id):
 
   return render_to_response('create_iteration.html', {'form': form})
 
-def create_task(request, project_id, iteration_id):
+def create_task(request, project_id, iteration_number):
   if request.method == 'POST':
     form = CreateTaskForm(request.POST)
+    p = get_object_or_404(Project, id=project_id)
+    i = get_object_or_404(Iteration, project=p, number=iteration_number)
 
     if request.user.is_authenticated() and
-       request.user.id in Project.objects.get(id=project_id):
+       request.user.id in p.get_collaborators():
 
       if form.is_valid():
         clean_data = form.cleaned_data
@@ -123,7 +126,36 @@ def create_task(request, project_id, iteration_id):
         task = task(name=clean_data['name'],
                     description=clean_data['description'],
                     points=clean_data['points'],
-                    assigned_to=user_to_be_assigned)
+                    assigned_to=user_to_be_assigned
+                    iteration=i)
+        task.save()
+
+        # TODO: What is the path for this redirection? I.e. how do we redirect
+        # the user to the newly created iteration?
+        return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
+                                    iteration.id + '/task/' task.id + '/')
+
+  else:
+    form = CreateIterationForm()
+
+  return render_to_response('create_iteration.html', {'form': form})
+
+def modify_task(request, project_id, iteration_number, task_number):
+  if request.method == 'POST':
+    form = CreateTaskForm(request.POST)
+    p = get_object_or_404(Project, id=project_id)
+    i = get_object_or_404(Iteration, project=p, number=iteration_number)
+
+    if request.user.is_authenticated() and
+       request.user.id in p.get_collaborators():
+
+      if form.is_valid():
+        clean_data = form.cleaned_data
+        user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
+        task = get_object_or_404(Task, iteration=i, number=task_number)
+        task.description = clean_data['description']
+        task.points = clean_data['points']
+        task.assigned_to = user_to_be_assigned
         task.save()
 
         # TODO: What is the path for this redirection? I.e. how do we redirect
