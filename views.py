@@ -109,3 +109,29 @@ def create_iteration(request, project_id):
     form = CreateIterationForm()
 
   return render_to_response('create_iteration.html', {'form': form})
+
+def create_task(request, project_id, iteration_id):
+  if request.method == 'POST':
+    form = CreateTaskForm(request.POST)
+
+    if request.user.is_authenticated() and
+       request.user.id in Project.objects.get(id=project_id):
+
+      if form.is_valid():
+        clean_data = form.cleaned_data
+        user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
+        task = task(name=clean_data['name'],
+                    description=clean_data['description'],
+                    points=clean_data['points'],
+                    assigned_to=user_to_be_assigned)
+        task.save()
+
+        # TODO: What is the path for this redirection? I.e. how do we redirect
+        # the user to the newly created iteration?
+        return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
+                                    iteration.id + '/task/' task.id + '/')
+
+  else:
+    form = CreateIterationForm()
+
+  return render_to_response('create_iteration.html', {'form': form})
