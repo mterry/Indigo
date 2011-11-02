@@ -156,6 +156,7 @@ def modify_task(request, project_id, iteration_number, task_number):
         task.description = clean_data['description']
         task.points = clean_data['points']
         task.assigned_to = user_to_be_assigned
+        task.closed = clean_data['closed']
         task.save()
 
         # TODO: What is the path for this redirection? I.e. how do we redirect
