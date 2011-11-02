@@ -27,19 +27,34 @@ def projects_list(request, filter_type):
   return render_to_response('projects.html', {'project_list': project_list})
 
 def projects_detail(request, project_id):
-  pass
+  p = get_object_or_404(Project, pk=project_id)
+  return render_to_response('indigo/project_detail.html', {'project': p})
 
 def iterations_list(request, project_id):
-  pass
+  p = get_object_or_404(Project, pk=project_d)
+  iteration_list = get_list_or_404(Iteration, project=p)
+  return render_to_response('iteration_list.html',
+                            {'iteration_list': iteration_list})
 
 def iterations_detail(request, project_id, iteration_id):
-  pass
+  p = get_object_or_404(Project, pk=project_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
+  return render_to_response('iteration_detail.html',
+                            {'project': p, 'iteration': i})
 
-def tasks_list(request, project_id, iteration_id):
-  pass
+def tasks_list(request, project_id, iteration_number):
+  p = get_object_or_404(Project, pk=project_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
+  task_list = get_list_or_404(Task, iteration=i)
+  return render_to_response('task_list.html', {'task_list': task_list})
 
-def tasks_detail(request, project_id, iteration_id, task_id):
-  pass
+def tasks_detail(request, project_id, iteration_number, task_number):
+  p = get_object_or_404(Project, pk=project_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
+  t = get_object_or_404(Task, iteration=i.id, number=task_number)
+  return render_to_response('task_detail.html', {'project': p,
+                                                  'iteration': i,
+                                                  'task': t})
 
 # Project responses
 
