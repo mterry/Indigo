@@ -10,14 +10,14 @@ class CreateIterationForm(forms.Form):
   name = forms.CharField(max_length=50, required=False)
   number = forms.IntegerField(min_value=1, required=True)
 
-class CreateTaskForm(forms.Form):
+class CreateTaskForm(forms.Form, project):
   name = forms.CharField(max_length=50, required=True)
   description = forms.CharField(required=False)
   points = forms.IntegerField(min_value=1, required=True)
-  assigned_to = forms.ChoiceField(choices=Project.get_collaborators(), required=False)
+  assigned_to = forms.ChoiceField(choices=project.get_collaborators(), required=False)
 
-class ModifyTaskForm(forms.Form):
+class ModifyTaskForm(forms.Form, project):
   description = forms.CharField(required=False)
   points = forms.IntegerField(min_value=1, required=True)
-  assigned_to = forms.ChoiceField(choices=Project.get_collaborators(), required=False)
+  assigned_to = forms.ChoiceField(choices=project.get_collaborators(), required=False)
   closed = forms.BooleanField(requird=False)
