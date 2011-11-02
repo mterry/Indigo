@@ -89,10 +89,10 @@ def create_project(request):
 
 def create_iteration(request, project_id):
   if request.method == 'POST':
-    form = CreateIterationForm(request.POST)
     p = get_object_or_404(Project, id=project_id)
+    form = CreateIterationForm(request.POST)
 
-    if request.user.is_authenticated() and
+    if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
 
       if form.is_valid():
@@ -113,11 +113,11 @@ def create_iteration(request, project_id):
 
 def create_task(request, project_id, iteration_number):
   if request.method == 'POST':
-    form = CreateTaskForm(request.POST)
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
+    form = CreateTaskForm(request.POST, project=p)
 
-    if request.user.is_authenticated() and
+    if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
 
       if form.is_valid():
@@ -133,7 +133,7 @@ def create_task(request, project_id, iteration_number):
         # TODO: What is the path for this redirection? I.e. how do we redirect
         # the user to the newly created iteration?
         return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
-                                    iteration.id + '/task/' task.id + '/')
+                                    iteration.id + '/task/' + task.id + '/')
 
   else:
     form = CreateIterationForm()
@@ -142,11 +142,11 @@ def create_task(request, project_id, iteration_number):
 
 def modify_task(request, project_id, iteration_number, task_number):
   if request.method == 'POST':
-    form = CreateTaskForm(request.POST)
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
+    form = ModifyTaskForm(request.POST, project=p)
 
-    if request.user.is_authenticated() and
+    if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
 
       if form.is_valid():
@@ -162,7 +162,7 @@ def modify_task(request, project_id, iteration_number, task_number):
         # TODO: What is the path for this redirection? I.e. how do we redirect
         # the user to the newly created iteration?
         return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
-                                    iteration.id + '/task/' task.id + '/')
+                                    iteration.id + '/task/' + task.id + '/')
 
   else:
     form = CreateIterationForm()
