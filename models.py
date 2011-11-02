@@ -14,7 +14,12 @@ class Project(models.Model):
     return self.name
 
   def get_collaborators(self):
-    pass
+    collaborator_dict = dict()
+    collaborator_list = self.collaborators.all()
+    for collaborator in collaborator_list:
+      collaborator_dict[collaborator.id] = collaborator.username
+    
+    return collaborator_dict
 
 class Iteration(models.Model):
   name = models.CharField(max_length=50)
