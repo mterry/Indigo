@@ -126,7 +126,7 @@ def create_task(request, project_id, iteration_number):
         task = task(name=clean_data['name'],
                     description=clean_data['description'],
                     points=clean_data['points'],
-                    assigned_to=user_to_be_assigned
+                    assigned_to=user_to_be_assigned,
                     iteration=i)
         task.save()
 
