@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block more_head %}
+	<link rel="stylesheet" href="/static/indigo/css/" />
+{% endblock %}
+
+{% block content %}
+	<h3>{{ title }}</h3>
+	<p>{{ message }}</p>
+	<form action="{{ form_action }}" method="post">
+		{{ form.as_table }}
+		<input type="submit" value="{{ submit_text }}" />
+	</form>
+{% endblock %}

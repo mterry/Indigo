@@ -1,12 +1,14 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('indigo.views',
-	url(r'^$', 'index'),
-	url(r'^projects/(?P<filter_type>.*)$', 'projects_list'),
-	url(r'^add_project/(?P<name>.*)$', 'create_project'),
+	url(r'^/$', 'index'),
+	url(r'^/login/$', 'login'),
+
+	# Project URLS
+	url(r'^/projects/(?P<filter_type>\w*)$', 'projects_list'),
+	url(r'^/add_project/(?P<name>\w*)$', 'create_project'),
 
     # Examples:
-    # url(r'^/', 'main'),
     # url(r'^login/', 'user_auth', name='login'),
     # url(r'^logout/', 'user_auth', name='logout'),
     # url(r'^create_user/', 'user_auth', name='create_user'),

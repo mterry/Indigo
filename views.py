@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 from django.template import Context, loader
+from django.contrib import auth
+from django.contrib.auth import forms
 from indigo.models import Project, Iteration, Task
 from indigo.forms import CreateProjectForm
 
@@ -16,6 +18,15 @@ def index(request):
     })
 	
   return HttpResponse(template.render(context))
+
+def login(request):
+	context = {
+		'title': 'Login', 
+		'message': 'Enter your username and password to login:', 
+		'form_acton': '/indigo/login_form/', 
+		'form': CreateProjectForm(),
+		'submit_text': 'Login!'};
+	return render_to_response('form.html', context)
 
 def user_auth(request):
   return null

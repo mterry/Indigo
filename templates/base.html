@@ -4,6 +4,9 @@
 	<title>Project Indigo{% block title %}{% endblock %}</title>
 
 	<link rel="stylesheet" type"text/css" href="/static/indigo/css/base.css" />
+
+	{% comment %} tee hee {% endcomment %}
+	{% block more_head %} {% endblock %}
 </head>
 
 
@@ -11,22 +14,22 @@
 
 	<div id="page">
 		<div id="header">
-			<h2>Project Indigo</h2>
+			<h2><a href="/indigo">Project Indigo</a></h2>
 			<p>Agile project management made easy!</p>
-		</div>	
+		</div>
 
 		<div id="menu">
 			<ul>
 				{% block menuElements %}
 				{# <li>Users</li> #}
-				<li><a href="projects/">Projects</a></li>
-				<li><a href="users/">Users</a></li>
+				<li><a href="/indigo/projects/">Projects</a></li>
+				<li><a href="/indigo/users/">Users</a></li>
 				{% endblock %}
 			</ul>
 		</div>
 
 		<div id="content">
-		{% block content %}{% endblock %}
+		{% block content %} {% endblock %}
 		</div>
 	</div>
 
