@@ -1,14 +1,14 @@
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 from django.template import Context, loader
+from django.contrib.auth.models import User
 from indigo.models import Project, Iteration, Task
 from indigo.forms import CreateProjectForm
 
 # Create your views here.
-is_logged_in = False
 
 def index(request):
-  if is_logged_in:
+  if request.user.is_authenticated():
     return projects_list(request)
   else:
     template = loader.get_template('index.html')
@@ -17,33 +17,29 @@ def index(request):
 	
   return HttpResponse(template.render(context))
 
-def user_auth(request):
-  return null
-
 def projects_list(request, filter_type):
-  if filter_type == 'all' or not is_logged_in:
+  if filter_type == 'all' or not request.user.is_authenticated():
     project_list = all_projects()
 
-  elif filter_type == 'users' or is_logged_in:
+  elif filter_type == 'users' or request.user.is_authenticated():
     project_list = projects_by_username()
 
   return render_to_response('projects.html', {'project_list': project_list})
 
-
 def projects_detail(request, project_id):
-  return null
+  pass
 
 def iterations_list(request, project_id):
-  return null
+  pass
 
 def iterations_detail(request, project_id, iteration_id):
-  return null
+  pass
 
 def tasks_list(request, project_id, iteration_id):
-  return null
+  pass
 
 def tasks_detail(request, project_id, iteration_id, task_id):
-  return null
+  pass
 
 # Project responses
 
@@ -59,32 +55,40 @@ def projects_by_username(name):
 def create_project(request):
   if request.method == 'POST':
     form = CreateProjectForm(request.POST)
-    if form.is_valid():
-      clean_data = form.cleaned_data
-      project = Project(name=clean_data['name'],
-        description=clean_data['description'],
-        task_point_timescale=clean_data['task_point_timescale']
-      )
-      project.save()
-      return HttpResponseRedirect('/projects/' + project.id + '/')
+
+    if request.user.is_authenticated():
+
+      if form.is_valid():
+        clean_data = form.cleaned_data
+        project = Project(name=clean_data['name'],
+                          description=clean_data['description'],
+                          task_point_timescale=clean_data['task_point_timescale'],
+                          owner=request.user)
+        project.save()
+        return HttpResponseRedirect('/projects/' + project.id + '/')
 
   else:
     form = CreateProjectForm()
 
   return render_to_response('create_project.html', {'form': form})
 
-def create_iteration(request):
+def create_iteration(request, project_id):
   if request.method == 'POST':
     form = CreateIterationForm(request.POST)
-    if form.is_valid():
-      clean_data = form.cleaned_data
-      iteration = Iteration(name=clean_data['name'],
-        number=clean_data['number']
-      )
-      iteration.save()
-      # TODO: What is the path for this redirection? I.e. how do we redirect the
-      # user to the newly created iteration?
-      return HttpResponseRedirect('')
+
+    if request.user.is_authenticated() and
+       request.user.id in Project.objects.get(id=project_id):
+
+      if form.is_valid():
+        clean_data = form.cleaned_data
+        iteration = Iteration(name=clean_data['name'],
+                              number=clean_data['number'])
+        iteration.save()
+
+        # TODO: What is the path for this redirection? I.e. how do we redirect
+        # the user to the newly created iteration?
+        return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
+                                    iteration.id + '/')
 
   else:
     form = CreateIterationForm()
