@@ -3,10 +3,14 @@
 {% block content %}
 	<h3>Projects</h3>
 
+  <p><a href="/indigo/project/add/">Add New Project</a></p>
+
+  <hr />
+
 	<ul id="projectsList">
 	{% for project in project_list %}
 		<li class="project">
-			<div class="projectName">{{project.name}}</div>
+			<div class="projectName"><a href="/indigo/project/{{project.id}}/">{{project.name}}</a></div>
 		</li>
 	{% endfor %}
 	</ul>

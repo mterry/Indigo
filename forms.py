@@ -1,14 +1,19 @@
 from django import forms
 from indigo.models import Project
+import datetime
 
 class CreateProjectForm(forms.Form):
-  subject = forms.CharField(max_length=50, required=True)
+  name = forms.CharField(max_length=50, required=True)
   description = forms.CharField(required=True)
   task_point_timescale = forms.IntegerField(min_value=1, required=True)
 
 class CreateIterationForm(forms.Form):
   name = forms.CharField(max_length=50, required=False)
-  number = forms.IntegerField(min_value=1, required=True)
+
+  now = datetime.datetime.today()
+  year = forms.IntegerField(min_value=now.year, required=True)
+  month = forms.IntegerField(min_value=now.month, required=True)
+  day = forms.IntegerField(min_value=now.day, required=True)
 
 class CreateTaskForm(forms.Form):
   name = forms.CharField(max_length=50, required=True)

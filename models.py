@@ -9,6 +9,7 @@ class Project(models.Model):
   task_point_timescale = models.PositiveIntegerField()
   collaborators = models.ManyToManyField(User, related_name='collaborators')
   owner = models.ForeignKey(User, related_name='owner')
+  next_iteration_number = models.IntegerField()
 
   def __unicode__(self):
     return self.name

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block more_head %}
+	<link rel="stylesheet" href="/static/indigo/css/" />
+{% endblock %}
+
+{% block content %}
+	<h3>Login</h3>
+	<form action="{% url 'django.contrib.auth.views.login' %}" method="post">
+		{% csrf_token %}
+		{{ form.as_table }}
+		<input type="submit" value="Login!" />
+		<input type="hidden" name="next" value="/indigo/project/" />
+	</form>
+{% endblock %}
