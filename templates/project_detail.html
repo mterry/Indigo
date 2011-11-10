@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block more_head %}
+	<link rel="stylesheet" href="/static/indigo/css/project.detail.css" />
+{% endblock %}
+
+{% block content %}
+	<h3 id="name">{{ project.name }}</h3>
+
+	<p id="description">{{ project.description }}</p>
+
+	<table>
+		<tr>
+			<td>Owner:</td><td>{{ project.owner }}</td>
+		</tr>
+		<tr>
+			<td>Velocity:</td><td>{{ project.velocity }}</td>
+		</tr>
+		<tr>
+			<td>Task point timescale:</td><td>{{ project.task_point_timescale }}</td>
+		</tr>
+	</table>
+
+	<ul>
+		{% for user in project.collaborators.all %}
+		<li>{{ user.username }}</li>
+		{% endfor %}
+	</ul>
+
+  <hr />
+  <p><b>Iterations:</b></p>
+  <p><a href="/indigo/project/{{project.id}}/iteration/add/">Add new Iteration</a></p>
+
+  <ul>
+		{% for iteration in iterations %}
+		<li><a href="/indigo/project/{{project.id}}/iteration/{{iteration.number}}/">{{ iteration.name }}</a></li>
+		{% endfor %}
+  </ul>
+
+{% endblock %}
