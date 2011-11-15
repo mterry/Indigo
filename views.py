@@ -1,17 +1,19 @@
-from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import Context, loader
-from django.contrib.auth.models import User
-from indigo.models import Project, Iteration, Task
-from indigo.forms import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm
+from django.shortcuts               import render_to_response, get_object_or_404, get_list_or_404
+from django.http                    import HttpResponse, HttpResponseRedirect
+from django.template                import Context, loader
+from django.contrib.auth.models     import User
+from django.contrib.auth.forms      import UserCreationForm
+from django.contrib                 import auth
+from indigo.models                  import Project, Iteration, Task
+from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm
 from django.core.context_processors import csrf
-from datetime import date
+from datetime                       import date
 
 # Create your views here.
 
 def index(request):
   if request.user.is_authenticated():
-    return projects_list(request)
+    return project_list(request)
   else:
     template = loader.get_template('index.html')
     context  = Context({
@@ -20,6 +22,25 @@ def index(request):
   return HttpResponse(template.render(context))
 
 def registration(request):
+  if request.method == 'POST':
+    form = UserCreationForm(request.POST)
+
+    if form.is_valid():
+      clean_data = form.cleaned_data
+
+      if clean_data['password1'] == clean_data['password2']:
+        newUser = User.objects.create_user(
+                    clean_data['username'],
+                    "",
+                    clean_data['password1']
+                  )
+        newUser.is_active = True
+        newUser.save();
+
+        return HttpResponseRedirect('/indigo/login/')
+      else:
+        return HttpResponseRedirect('/indigo/registration/')
+
   if request.user.is_authenticated():
     return HttpResponseRedirect('/indigo/project/');
 
@@ -31,7 +52,7 @@ def registration(request):
                        UserCreationForm(),
                        'Register!')
 
-def project_list(request, filter_type):
+def project_list(request, filter_type=''):
   if filter_type == 'all' or not request.user.is_authenticated():
     project_list = all_projects()
 
@@ -101,7 +122,7 @@ def create_project(request):
   else:
     form = CreateProjectForm()
 
-  return renderForm(request,
+  return render_form(request,
   					'Create Project:', 
   					'Create an project by filling in the form below!',
 					'/indigo/project/add/',
@@ -138,7 +159,7 @@ def create_iteration(request, project_id):
   else:
     form = CreateIterationForm()
 
-  return renderForm(request,
+  return render_form(request,
   					'Create Iteration:', 
   					'Create an iteration by filling in the form below!',
 					'/indigo/project/' + str(project_id) + '/iteration/add/',
@@ -201,11 +222,11 @@ def modify_task(request, project_id, iteration_number, task_number):
   else:
     form = CreateIterationForm()
 
-  return renderForm('Create Task:', 
+  return render_form('Create Task:', 
   					'Create an task by filling in the form below!',
 					'/projects/' + project_id + '/iteration/' + iteration_number + '/task/' + task_number + '/')
 
-def renderForm(request, title, message, form_action, form, submit_text):
+def render_form(request, title, message, form_action, form, submit_text):
 	params = {'title': title, 'message': message, 'form_action': form_action, 'form': form, 'submit_text': submit_text}
 	params.update(csrf(request))
 	return render_to_response('form.html', params)

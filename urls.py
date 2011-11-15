@@ -24,6 +24,8 @@ project_patterns = patterns('indigo.views',
 urlpatterns = patterns('indigo.views',
 	url(r'^$', 'index'),
 
+	url(r'^registration/$', 'registration'),
+
 	# Project URLS
 	#url(r'^/projects/(?P<filter_type>\w*)$', 'projects_list'),
 	#url(r'^/add_project/$', 'create_project'),
@@ -58,6 +60,5 @@ urlpatterns = patterns('indigo.views',
 )
 
 urlpatterns += patterns('',
-	url(r'^registration/$', 'registration'),
 	url(r'^login/$', 'django.contrib.auth.views.login'),
 )
