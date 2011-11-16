@@ -35,17 +35,10 @@ def project_detail(request, project_id):
 def iteration_detail(request, project_id, iteration_id):
   p = get_object_or_404(Project, pk=project_id)
   i = get_object_or_404(Iteration, project=p.id, number=iteration_id)
+  tasks = Task.objects.filter(iteration=i)
 
-  params = {'project': p, 'iteration': i}
+  params = {'project': p, 'iteration': i, 'tasks': tasks}
   return render_base(request, params, 'iteration_detail.html')
-
-def tasks_list(request, project_id, iteration_number):
-  p = get_object_or_404(Project, pk=project_id)
-  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
-  task_list = get_list_or_404(Task, iteration=i)
-
-  params = {'task_list': task_list}
-  return render_base(request, params, 'task_list.html')
 
 def task_detail(request, project_id, iteration_number, task_number):
   p = get_object_or_404(Project, pk=project_id)
