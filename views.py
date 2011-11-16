@@ -189,7 +189,7 @@ def create_task(request, project_id, iteration_number):
         i.save()
 
         # Redirect to iteration detail screen
-        return HttpResponseRedirect('/indigo/projects/' + str(p.id) + '/iteration/' + str(i.number) + '/')
+        return HttpResponseRedirect('/indigo/project/' + str(p.id) + '/iteration/' + str(i.number) + '/')
 
       else:
         return HttpResponseRedirect('/indigo/')
