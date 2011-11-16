@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 
 
 task_patterns = patterns('indigo.views',
-	url(r'^(?P<task_id>\d+)/$', 'task_detail'),
+	url(r'^(?P<task_number>\d+)/$', 'task_detail'),
 	url(r'^add/$', 'create_task'),
 )
 
