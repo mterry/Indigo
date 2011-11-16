@@ -18,13 +18,22 @@
 			<p>Agile project management made easy!</p>
 		</div>
 
+    {% if user.is_authenticated %}
+    <div id="userTitle">{{ user.username }} is currently logged in!</div>
+    {% endif %}
+
 		<div id="menu">
 			<ul>
 				{% block menuElements %}
 				<li><a href="/indigo/project/">Projects</a></li>
+				{% endblock %}
+
+        {% if user.is_authenticated %}
+				<li><a href="/indigo/logout">Logout</a></li>
+        {% else %}
 				<li><a href="/indigo/registration/">Registration</a></li>
 				<li><a href="/indigo/login/">Login</a></li>
-				{% endblock %}
+        {% endif %}
 			</ul>
 		</div>
 
