@@ -29,6 +29,7 @@ class Iteration(models.Model):
   project = models.ForeignKey(Project)
   due_date = models.DateField(null=False)
   finished = models.BooleanField(null=False)
+  next_task_number = models.IntegerField()
   
   def __unicode__(self):
     return self.name

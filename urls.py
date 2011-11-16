@@ -7,9 +7,9 @@ task_patterns = patterns('indigo.views',
 )
 
 iteration_patterns = patterns('indigo.views',
-	url(r'^task/', include(task_patterns)),
+	url(r'^(?P<iteration_number>\d+)/task/', include(task_patterns)),
 
-	url(r'^(?P<iteration_id>\d+)/$', 'iteration_detail'),
+	url(r'^(?P<iteration_number>\d+)/$', 'iteration_detail'),
 	url(r'^add/$', 'create_iteration'),
 )
 

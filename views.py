@@ -32,9 +32,9 @@ def project_detail(request, project_id):
   params = {'project': p, 'iterations': iterations}
   return render_base(request, params, 'project_detail.html')
 
-def iteration_detail(request, project_id, iteration_id):
+def iteration_detail(request, project_id, iteration_number):
   p = get_object_or_404(Project, pk=project_id)
-  i = get_object_or_404(Iteration, project=p.id, number=iteration_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
   tasks = Task.objects.filter(iteration=i)
 
   params = {'project': p, 'iteration': i, 'tasks': tasks}
@@ -140,7 +140,8 @@ def create_iteration(request, project_id):
                               velocity=0,
                               project=project,
                               due_date=due_date,
-                              finished=False)
+                              finished=False,
+                              next_task_number=0)
         iteration.save()
 
         project.next_iteration_number += 1
@@ -165,23 +166,30 @@ def create_task(request, project_id, iteration_number):
   if request.method == 'POST':
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
-    form = CreateTaskForm(request.POST, project=p)
+    form = CreateTaskForm(p, request.POST)
 
     if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
 
       if form.is_valid():
         clean_data = form.cleaned_data
-        user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
-        task = task(name=clean_data['name'],
+        if clean_data['assigned_to'] != '-1':
+          user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
+        else:
+          user_to_be_assigned = None
+        task = Task(name=clean_data['name'],
+                    number=i.next_task_number,
                     description=clean_data['description'],
                     points=clean_data['points'],
                     assigned_to=user_to_be_assigned,
                     iteration=i)
         task.save()
 
-        # Redirect to task detail screen
-        return HttpResponseRedirect('/indigo/projects/' + project.id + '/iteration/' + iteration.id + '/task/' + task.id + '/')
+        i.next_task_number += 1
+        i.save()
+
+        # Redirect to iteration detail screen
+        return HttpResponseRedirect('/indigo/projects/' + str(p.id) + '/iteration/' + str(i.number) + '/')
 
       else:
         return HttpResponseRedirect('/indigo/')
@@ -190,16 +198,17 @@ def create_task(request, project_id, iteration_number):
     else:
       return HttpResponseRedirect('/indigo/login/')
 
-  form = CreateTaskForm()
+  p = get_object_or_404(Project, id=project_id)
+  form = CreateTaskForm(p)
   return render_form(request, 'Create Task:', 'Create a task by filling in the form below!',
-				             '/indigo/project/' + str(project_id) + '/iteration/' + str(iteration_number) + '/',
+				             '/indigo/project/' + str(project_id) + '/iteration/' + str(iteration_number) + '/task/add/',
 				             form, 'Create!')
 
 def modify_task(request, project_id, iteration_number, task_number):
   if request.method == 'POST':
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
-    form = ModifyTaskForm(request.POST, project=p)
+    form = ModifyTaskForm(p, request.POST)
 
     if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
@@ -214,7 +223,7 @@ def modify_task(request, project_id, iteration_number, task_number):
         task.closed = clean_data['closed']
         task.save()
 
-        return HttpResponseRedirect('/indigo/projects/' + project.id + '/iteration/' + iteration.id + '/task/' + task.id + '/')
+        return HttpResponseRedirect('/indigo/projects/' + p.id + '/iteration/' + i.id + '/task/' + task.id + '/')
 
       else:
         return HttpResponseRedirect('/indigo/')
@@ -224,7 +233,7 @@ def modify_task(request, project_id, iteration_number, task_number):
       return HttpResponseRedirect('/indigo/login/')
 
 
-  form = ModifyTaskForm()
+  form = ModifyTaskForm(p)
   return render_form(request, 'Modify Task:', 'Modify a task by filling in the form below!',
 					           '/projects/' + str(project_id) + '/iteration/' + str(iteration_number) + '/task/' + str(task_number) + '/',
                      form, 'Update!')
