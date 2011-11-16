@@ -7,9 +7,9 @@ task_patterns = patterns('indigo.views',
 )
 
 iteration_patterns = patterns('indigo.views',
-	url(r'^task/', include(task_patterns)),
+	url(r'^(?P<iteration_number>\d+)/task/', include(task_patterns)),
 
-	url(r'^(?P<iteration_id>\d+)/$', 'iteration_detail'),
+	url(r'^(?P<iteration_number>\d+)/$', 'iteration_detail'),
 	url(r'^add/$', 'create_iteration'),
 )
 
@@ -23,6 +23,8 @@ project_patterns = patterns('indigo.views',
 
 urlpatterns = patterns('indigo.views',
 	url(r'^$', 'index'),
+
+	url(r'^registration/$', 'registration'),
 
 	# Project URLS
 	#url(r'^/projects/(?P<filter_type>\w*)$', 'projects_list'),
@@ -58,6 +60,6 @@ urlpatterns = patterns('indigo.views',
 )
 
 urlpatterns += patterns('',
-	url(r'^registration/$', 'registration'),
 	url(r'^login/$', 'django.contrib.auth.views.login'),
+	url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/indigo/'}),
 )

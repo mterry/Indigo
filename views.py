@@ -1,25 +1,85 @@
-from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import Context, loader
-from django.contrib.auth.models import User
-from indigo.models import Project, Iteration, Task
-from indigo.forms import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm
+from django.shortcuts               import render_to_response, get_object_or_404, get_list_or_404
+from django.http                    import HttpResponseRedirect
+from django.template                import RequestContext
+from django.contrib.auth.models     import User
+from django.contrib.auth.forms      import UserCreationForm
+from django.contrib                 import auth
+from indigo.models                  import Project, Iteration, Task
+from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm
 from django.core.context_processors import csrf
-from datetime import date
+from datetime                       import date
 
-# Create your views here.
-
+# Content Pages
 def index(request):
   if request.user.is_authenticated():
-    return projects_list(request)
+    return project_list(request)
   else:
-    template = loader.get_template('index.html')
-    context  = Context({
-    })
-	
-  return HttpResponse(template.render(context))
+    return render_base(request, {}, 'index.html')
 
+def project_list(request, filter_type=''):
+  if filter_type == 'all' or not request.user.is_authenticated():
+    project_list = all_projects()
+
+  elif filter_type == 'users' or request.user.is_authenticated():
+    project_list = projects_by_username(request.user.username)
+
+  return render_base(request, {'project_list': project_list}, 'projects.html')
+
+def project_detail(request, project_id):
+  p = get_object_or_404(Project, pk=project_id)
+  iterations = Iteration.objects.filter(project=p)
+
+  params = {'project': p, 'iterations': iterations}
+  return render_base(request, params, 'project_detail.html')
+
+def iteration_detail(request, project_id, iteration_number):
+  p = get_object_or_404(Project, pk=project_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
+  tasks = Task.objects.filter(iteration=i)
+
+  params = {'project': p, 'iteration': i, 'tasks': tasks}
+  return render_base(request, params, 'iteration_detail.html')
+
+def task_detail(request, project_id, iteration_number, task_number):
+  p = get_object_or_404(Project, pk=project_id)
+  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
+  t = get_object_or_404(Task, iteration=i.id, number=task_number)
+
+  params = {'project': p, 'iteration': i, 'task': t}
+  return render_base(request, params, 'task_detail.html')
+
+
+# Project helpers
+def all_projects():
+  return Project.objects.all().order_by('name')
+
+def projects_by_username(name):
+  user = get_object_or_404(User, username=name)
+  #return get_list_or_404(Project, collaborators=user).order_by('name')
+  return Project.objects.filter(collaborators=user).order_by('name')
+
+
+# Form processing views
 def registration(request):
+  if request.method == 'POST':
+    form = UserCreationForm(request.POST)
+
+    if form.is_valid():
+      clean_data = form.cleaned_data
+
+      if clean_data['password1'] == clean_data['password2']:
+        newUser = User.objects.create_user(
+                    clean_data['username'],
+                    "",
+                    clean_data['password1']
+                  )
+        newUser.is_active = True
+        newUser.save();
+
+        return HttpResponseRedirect('/indigo/login/')
+      else:
+        return HttpResponseRedirect('/indigo/registration/')
+
   if request.user.is_authenticated():
     return HttpResponseRedirect('/indigo/project/');
 
@@ -30,52 +90,6 @@ def registration(request):
                        '/indigo/registration/',
                        UserCreationForm(),
                        'Register!')
-
-def project_list(request, filter_type):
-  if filter_type == 'all' or not request.user.is_authenticated():
-    project_list = all_projects()
-
-  elif filter_type == 'users' or request.user.is_authenticated():
-    project_list = projects_by_username(request.user.username)
-
-  return render_to_response('projects.html', {'project_list': project_list})
-
-def project_detail(request, project_id):
-  p = get_object_or_404(Project, pk=project_id)
-  iterations = Iteration.objects.filter(project=p)
-  return render_to_response('project_detail.html', {'project': p, 'iterations': iterations})
-
-def iteration_detail(request, project_id, iteration_id):
-  p = get_object_or_404(Project, pk=project_id)
-  i = get_object_or_404(Iteration, project=p.id, number=iteration_id)
-  return render_to_response('iteration_detail.html',
-                            {'project': p, 'iteration': i})
-
-def tasks_list(request, project_id, iteration_number):
-  p = get_object_or_404(Project, pk=project_id)
-  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
-  task_list = get_list_or_404(Task, iteration=i)
-  return render_to_response('task_list.html', {'task_list': task_list})
-
-def task_detail(request, project_id, iteration_number, task_number):
-  p = get_object_or_404(Project, pk=project_id)
-  i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
-  t = get_object_or_404(Task, iteration=i.id, number=task_number)
-  return render_to_response('task_detail.html', {'project': p,
-                                                  'iteration': i,
-                                                  'task': t})
-
-# Project responses
-
-def all_projects():
-  return Project.objects.all().order_by('name')
-
-def projects_by_username(name):
-  user = get_object_or_404(User, username=name)
-  #return get_list_or_404(Project, collaborators=user).order_by('name')
-  return Project.objects.filter(collaborators=user).order_by('name')
-
-# Form processing views
 
 def create_project(request):
   if request.method == 'POST':
@@ -98,15 +112,17 @@ def create_project(request):
         project.save()
         return HttpResponseRedirect('/indigo/project/' + str(project.id) + '/')
 
-  else:
-    form = CreateProjectForm()
+      else:
+        return HttpResponseRedirect('/indigo/')
 
-  return renderForm(request,
-  					'Create Project:', 
-  					'Create an project by filling in the form below!',
-					'/indigo/project/add/',
-					form,
-					'Create!')
+    # Not autheticated redirect to login 
+    else:
+      return HttpResponseRedirect('/indigo/login/')
+  
+  form = CreateProjectForm()
+  return render_form(request, 'Create Project:', 
+  					         'Create an project by filling in the form below!',
+					           '/indigo/project/add/', form, 'Create!')
 
 def create_iteration(request, project_id):
   if request.method == 'POST':
@@ -124,61 +140,75 @@ def create_iteration(request, project_id):
                               velocity=0,
                               project=project,
                               due_date=due_date,
-                              finished=False)
+                              finished=False,
+                              next_task_number=0)
         iteration.save()
 
         project.next_iteration_number += 1
         project.save()
 
-        # TODO: What is the path for this redirection? I.e. how do we redirect
-        # the user to the newly created iteration?
-        return HttpResponseRedirect('/indigo/project/' + str(project.id) + '/iteration/' +
-                                    str(iteration.number) + '/')
+        return HttpResponseRedirect('/indigo/project/' + str(project.id) + '/iteration/' + str(iteration.number) + '/')
 
-  else:
-    form = CreateIterationForm()
+      else:
+        return HttpResponseRedirect('/indigo/')
 
-  return renderForm(request,
-  					'Create Iteration:', 
-  					'Create an iteration by filling in the form below!',
-					'/indigo/project/' + str(project_id) + '/iteration/add/',
-					form,
-					'Create!')
+    # Not autheticated redirect to login 
+    else:
+      return HttpResponseRedirect('/indigo/login/')
+
+  form = CreateIterationForm()
+  return render_form(request, 'Create Iteration:', 
+                     'Create an iteration by filling in the form below!',
+					           '/indigo/project/' + str(project_id) + '/iteration/add/',
+					           form, 'Create!')
 
 def create_task(request, project_id, iteration_number):
   if request.method == 'POST':
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
-    form = CreateTaskForm(request.POST, project=p)
+    form = CreateTaskForm(p, request.POST)
 
     if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
 
       if form.is_valid():
         clean_data = form.cleaned_data
-        user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
-        task = task(name=clean_data['name'],
+        if clean_data['assigned_to'] != '-1':
+          user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
+        else:
+          user_to_be_assigned = None
+        task = Task(name=clean_data['name'],
+                    number=i.next_task_number,
                     description=clean_data['description'],
                     points=clean_data['points'],
                     assigned_to=user_to_be_assigned,
                     iteration=i)
         task.save()
 
-        # TODO: What is the path for this redirection? I.e. how do we redirect
-        # the user to the newly created iteration?
-        return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
-                                    iteration.id + '/task/' + task.id + '/')
+        i.next_task_number += 1
+        i.save()
 
-  else:
-    form = CreateIterationForm()
+        # Redirect to iteration detail screen
+        return HttpResponseRedirect('/indigo/projects/' + str(p.id) + '/iteration/' + str(i.number) + '/')
 
-  return render_to_response('create_iteration.html', {'form': form})
+      else:
+        return HttpResponseRedirect('/indigo/')
+
+    # Not autheticated redirect to login 
+    else:
+      return HttpResponseRedirect('/indigo/login/')
+
+  p = get_object_or_404(Project, id=project_id)
+  form = CreateTaskForm(p)
+  return render_form(request, 'Create Task:', 'Create a task by filling in the form below!',
+				             '/indigo/project/' + str(project_id) + '/iteration/' + str(iteration_number) + '/task/add/',
+				             form, 'Create!')
 
 def modify_task(request, project_id, iteration_number, task_number):
   if request.method == 'POST':
     p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
-    form = ModifyTaskForm(request.POST, project=p)
+    form = ModifyTaskForm(p, request.POST)
 
     if request.user.is_authenticated() and \
        request.user.id in p.get_collaborators():
@@ -193,19 +223,26 @@ def modify_task(request, project_id, iteration_number, task_number):
         task.closed = clean_data['closed']
         task.save()
 
-        # TODO: What is the path for this redirection? I.e. how do we redirect
-        # the user to the newly created iteration?
-        return HttpResponseRedirect('/projects/' + project.id + '/iteration/' +
-                                    iteration.id + '/task/' + task.id + '/')
+        return HttpResponseRedirect('/indigo/projects/' + p.id + '/iteration/' + i.id + '/task/' + task.id + '/')
 
-  else:
-    form = CreateIterationForm()
+      else:
+        return HttpResponseRedirect('/indigo/')
 
-  return renderForm('Create Task:', 
-  					'Create an task by filling in the form below!',
-					'/projects/' + project_id + '/iteration/' + iteration_number + '/task/' + task_number + '/')
+    # Not autheticated redirect to login 
+    else:
+      return HttpResponseRedirect('/indigo/login/')
 
-def renderForm(request, title, message, form_action, form, submit_text):
-	params = {'title': title, 'message': message, 'form_action': form_action, 'form': form, 'submit_text': submit_text}
-	params.update(csrf(request))
-	return render_to_response('form.html', params)
+
+  form = ModifyTaskForm(p)
+  return render_form(request, 'Modify Task:', 'Modify a task by filling in the form below!',
+					           '/projects/' + str(project_id) + '/iteration/' + str(iteration_number) + '/task/' + str(task_number) + '/',
+                     form, 'Update!')
+
+def render_form(request, title, message, form_action, form, submit_text):
+  params = {'title': title, 'message': message, 'form_action': form_action, 'form': form, 'submit_text': submit_text}
+  params.update(csrf(request))
+  return render_base(request, params, 'form.html')
+
+def render_base(request, params, viewName):
+  # Pass the RequestContext so we can get context in our templates for auth and media stuff
+  return render_to_response(viewName, params, context_instance=RequestContext(request))

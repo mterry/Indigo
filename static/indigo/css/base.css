@@ -18,6 +18,12 @@
 	font-style: italic;
 }
 
+#userTitle
+{
+  font-weight: bold;
+  margin: 0 0 3px 8px;
+}
+
 #menu
 {
 	border: 1px solid #00B8F5;
