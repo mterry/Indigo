@@ -124,6 +124,16 @@ def create_project(request):
   					         'Create an project by filling in the form below!',
 					           '/indigo/project/add/', form, 'Create!')
 
+def project_associate(request, project_id):
+  if request.user.is_authenticated():
+    p = get_object_or_404(Project, pk=project_id)
+
+    if request.user not in p.get_collaborators():
+      p.collaborators.add(request.user)
+      p.save()
+
+  return HttpResponseRedirect('/indigo/project/'+str(project_id)+'/');
+
 def create_iteration(request, project_id):
   if request.method == 'POST':
     project = get_object_or_404(Project, id=project_id)

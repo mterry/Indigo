@@ -19,7 +19,10 @@ project_patterns = patterns('indigo.views',
 
 	url(r'^(?P<project_id>\d+)/$', 'project_detail'),
 	url(r'^add/$', 'create_project'),
-	url(r'^(?P<filter_type>\w*)$', 'project_list'),
+
+  url(r'^$', 'project_list'),
+	url(r'^(?P<filter_type>\w*)/$', 'project_list'),
+	url(r'^(?P<project_id>\d+)/associate/$', 'project_associate'),
 )
 
 urlpatterns = patterns('indigo.views',

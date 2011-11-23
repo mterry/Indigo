@@ -21,6 +21,11 @@
 		</tr>
 	</table>
 
+  {% if user.is_authenticated and user.id not in project.get_collaborators %} 
+  <a href="/indigo/project/{{project.id}}/associate/">Associate with</a>
+  {% endif %}
+
+  <p>Project collaborators:</p>
 	<ul>
 		{% for user in project.collaborators.all %}
 		<li>{{ user.username }}</li>
