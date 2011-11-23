@@ -223,8 +223,7 @@ def modify_task(request, project_id, iteration_number, task_number):
         if clean_data['assigned_to'] == '-1':
           task.assigned_to = None
         else:
-          user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
-          task.assigned_to = user_to_be_assigned
+          task.assigned_to = User.objects.get(id=clean_data['assigned_to'])
         task.save()
 
         return HttpResponseRedirect('/indigo/project/' + str(p.id) + '/iteration/' + str(i.number) + '/task/' + str(task.number) + '/')
