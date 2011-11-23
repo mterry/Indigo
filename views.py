@@ -205,8 +205,8 @@ def create_task(request, project_id, iteration_number):
 				             form, 'Create!')
 
 def modify_task(request, project_id, iteration_number, task_number):
+  p = get_object_or_404(Project, id=project_id)
   if request.method == 'POST':
-    p = get_object_or_404(Project, id=project_id)
     i = get_object_or_404(Iteration, project=p, number=iteration_number)
     form = ModifyTaskForm(p, request.POST)
 
@@ -215,15 +215,19 @@ def modify_task(request, project_id, iteration_number, task_number):
 
       if form.is_valid():
         clean_data = form.cleaned_data
-        user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
         task = get_object_or_404(Task, iteration=i, number=task_number)
         task.description = clean_data['description']
         task.points = clean_data['points']
-        task.assigned_to = user_to_be_assigned
         task.closed = clean_data['closed']
+  
+        if clean_data['assigned_to'] == '-1':
+          task.assigned_to = None
+        else:
+          user_to_be_assigned = User.objects.get(id=clean_data['assigned_to'])
+          task.assigned_to = user_to_be_assigned
         task.save()
 
-        return HttpResponseRedirect('/indigo/projects/' + p.id + '/iteration/' + i.id + '/task/' + task.id + '/')
+        return HttpResponseRedirect('/indigo/project/' + str(p.id) + '/iteration/' + str(i.number) + '/task/' + str(task.number) + '/')
 
       else:
         return HttpResponseRedirect('/indigo/')
@@ -235,7 +239,7 @@ def modify_task(request, project_id, iteration_number, task_number):
 
   form = ModifyTaskForm(p)
   return render_form(request, 'Modify Task:', 'Modify a task by filling in the form below!',
-					           '/projects/' + str(project_id) + '/iteration/' + str(iteration_number) + '/task/' + str(task_number) + '/',
+					           '/indigo/project/'+str(project_id)+'/iteration/'+str(iteration_number)+'/task/'+str(task_number)+'/edit/',
                      form, 'Update!')
 
 def render_form(request, title, message, form_action, form, submit_text):
