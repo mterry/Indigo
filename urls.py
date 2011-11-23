@@ -18,6 +18,7 @@ project_patterns = patterns('indigo.views',
 	url(r'^(?P<project_id>\d+)/iteration/', include(iteration_patterns)),
 
 	url(r'^(?P<project_id>\d+)/$', 'project_detail'),
+	url(r'^(?P<project_id>\d+)/edit/$', 'modify_project'),
 	url(r'^add/$', 'create_project'),
 
   url(r'^$', 'project_list'),

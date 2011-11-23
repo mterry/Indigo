@@ -5,7 +5,7 @@ from django.contrib.auth.models     import User
 from django.contrib.auth.forms      import UserCreationForm
 from django.contrib                 import auth
 from indigo.models                  import Project, Iteration, Task
-from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm
+from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm, ModifyProjectForm
 from django.core.context_processors import csrf
 from datetime                       import date
 
@@ -123,6 +123,34 @@ def create_project(request):
   return render_form(request, 'Create Project:', 
   					         'Create an project by filling in the form below!',
 					           '/indigo/project/add/', form, 'Create!')
+
+def modify_project(request, project_id):
+  p = get_object_or_404(Project, id=project_id)
+  if request.method == 'POST':
+    form = ModifyProjectForm(request.POST)
+
+    if request.user.is_authenticated() and \
+       request.user.id in p.get_collaborators():
+
+      if form.is_valid():
+        clean_data = form.cleaned_data
+        p.description = clean_data['description']
+        p.task_point_timescale = clean_data['task_point_timescale']
+        p.save()
+        return HttpResponseRedirect('/indigo/project/'+str(p.id)+'/')
+
+      else:
+        return HttpResponseRedirect('/indigo/project/'+str(p.id)+'/modify/')
+
+    # Not autheticated redirect to login 
+    else:
+      return HttpResponseRedirect('/indigo/login/')
+
+
+  form = ModifyProjectForm()
+  return render_form(request, 'Modify Project:', 'Modify a project by filling in the form below!',
+					           '/indigo/project/'+str(project_id)+'/edit/',
+                     form, 'Update!')
 
 def project_associate(request, project_id):
   if request.user.is_authenticated():

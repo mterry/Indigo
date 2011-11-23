@@ -47,3 +47,7 @@ class ModifyTaskForm(forms.Form):
       userChoices.append((user.id, user.username))
 
     self.fields['assigned_to'].choices = userChoices
+
+class ModifyProjectForm(forms.Form):
+  description = forms.CharField(required=True)
+  task_point_timescale = forms.IntegerField(min_value=1, required=True)
