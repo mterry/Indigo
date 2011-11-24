@@ -19,12 +19,6 @@
 		</tr>
 	</table>
 
-	<ul>
-		{% for user in project.collaborators.all %}
-		<li>{{ user.username }}</li>
-		{% endfor %}
-	</ul>
-
   <hr />
   <p><b>Tasks:</b></p>
   <p><a href="/indigo/project/{{project.id}}/iteration/{{iteration.number}}/task/add/">Add new Task</a></p>

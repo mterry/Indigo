@@ -5,6 +5,7 @@ task_patterns = patterns('indigo.views',
 	url(r'^(?P<task_number>\d+)/$', 'task_detail'),
 	url(r'^add/$', 'create_task'),
 	url(r'^(?P<task_number>\d+)/edit/$', 'modify_task'),
+	url(r'^(?P<task_number>\d+)/move/$', 'move_task'),
 )
 
 iteration_patterns = patterns('indigo.views',

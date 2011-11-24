@@ -1,5 +1,5 @@
 from django import forms
-from indigo.models import Project
+from indigo.models import Project, Iteration
 from django.contrib.auth.models import User
 import datetime
 
@@ -51,3 +51,15 @@ class ModifyTaskForm(forms.Form):
 class ModifyProjectForm(forms.Form):
   description = forms.CharField(required=True)
   task_point_timescale = forms.IntegerField(min_value=1, required=True)
+
+class MoveTaskForm(forms.Form):
+  other_iteration = forms.ChoiceField(choices = [])
+
+  def __init__(self, project, iteration, data=None):
+    super(MoveTaskForm, self).__init__(data)
+
+    iteration_choices = [(-1, '')]
+    for iteration in Iteration.objects.filter(project=project).exclude(pk=iteration.id):
+      iteration_choices.append((iteration.number, iteration.name))
+
+    self.fields['other_iteration'].choices = iteration_choices

@@ -5,7 +5,7 @@ from django.contrib.auth.models     import User
 from django.contrib.auth.forms      import UserCreationForm
 from django.contrib                 import auth
 from indigo.models                  import Project, Iteration, Task
-from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm, ModifyProjectForm
+from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm, ModifyProjectForm, MoveTaskForm
 from django.core.context_processors import csrf
 from datetime                       import date
 
@@ -45,7 +45,7 @@ def task_detail(request, project_id, iteration_number, task_number):
   i = get_object_or_404(Iteration, project=p.id, number=iteration_number)
   t = get_object_or_404(Task, iteration=i.id, number=task_number)
 
-  params = {'project': p, 'iteration': i, 'task': t}
+  params = {'project': p, 'iteration': i, 'task': t, 'iteration_move_form': MoveTaskForm(p, i)}
   return render_base(request, params, 'task_detail.html')
 
 
@@ -278,6 +278,26 @@ def modify_task(request, project_id, iteration_number, task_number):
   return render_form(request, 'Modify Task:', 'Modify a task by filling in the form below!',
 					           '/indigo/project/'+str(project_id)+'/iteration/'+str(iteration_number)+'/task/'+str(task_number)+'/edit/',
                      form, 'Update!')
+
+def move_task(request, project_id, iteration_number, task_number):
+  if request.method == 'POST' and request.user.is_authenticated():
+    project = get_object_or_404(Project, pk=project_id)
+    iteration = get_object_or_404(Iteration, number=iteration_number)
+    task = get_object_or_404(Task, number=task_number)
+
+    form = MoveTaskForm(project, iteration, request.POST)
+    if form.is_valid():
+      clean_data = form.cleaned_data
+
+      if clean_data['other_iteration'] != '-1':
+        task.iteration = Iteration.objects.get(number=clean_data['other_iteration'])
+        task.save()
+        iteration_number = clean_data['other_iteration']
+
+    else:
+      return HttpResponseRedirect('/indigo/')
+
+  return HttpResponseRedirect('/indigo/project/'+str(project_id)+'/iteration/'+str(iteration_number)+'/task/'+str(task_number)+'/')
 
 def render_form(request, title, message, form_action, form, submit_text):
   params = {'title': title, 'message': message, 'form_action': form_action, 'form': form, 'submit_text': submit_text}

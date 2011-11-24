@@ -29,5 +29,13 @@
 		</tr>
 	</table>
 
+  {% if otherIterations.len <= 0 %} 
+  <form method="post" action="/indigo/project/{{project.id}}/iteration/{{iteration.number}}/task/{{task.number}}/move/">
+		{% csrf_token %}
+    {{ iteration_move_form.as_table }}
+    <input type="submit" value="Move Task" />
+  </form>
+  {% endif %}
+
 	<a href="/indigo/project/{{project.id}}/iteration/{{iteration.number}}/task/{{task.number}}/edit/">Edit this Task!</a>
 {% endblock %}
