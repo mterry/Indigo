@@ -1,36 +1,36 @@
 from django.conf.urls.defaults import patterns, include, url
 
 
-task_patterns = patterns('indigo.views',
-	url(r'^(?P<task_number>\d+)/$', 'task_detail'),
-	url(r'^add/$', 'create_task'),
-	url(r'^(?P<task_number>\d+)/edit/$', 'modify_task'),
-	url(r'^(?P<task_number>\d+)/move/$', 'move_task'),
+task_patterns = patterns('',
+	url(r'^(?P<task_number>\d+)/$', 'indigo.views.task_detail'),
+	url(r'^add/$', 'indigo.forms_view.create_task'),
+	url(r'^(?P<task_number>\d+)/edit/$', 'indigo.forms_view.modify_task'),
+	url(r'^(?P<task_number>\d+)/move/$', 'indigo.forms_view.move_task'),
 )
 
-iteration_patterns = patterns('indigo.views',
+iteration_patterns = patterns('',
 	url(r'^(?P<iteration_number>\d+)/task/', include(task_patterns)),
 
-	url(r'^(?P<iteration_number>\d+)/$', 'iteration_detail'),
-	url(r'^add/$', 'create_iteration'),
+	url(r'^(?P<iteration_number>\d+)/$', 'indigo.views.iteration_detail'),
+	url(r'^add/$', 'indigo.forms_view.create_iteration'),
 )
 
-project_patterns = patterns('indigo.views',
+project_patterns = patterns('',
 	url(r'^(?P<project_id>\d+)/iteration/', include(iteration_patterns)),
 
-	url(r'^(?P<project_id>\d+)/$', 'project_detail'),
-	url(r'^(?P<project_id>\d+)/edit/$', 'modify_project'),
-	url(r'^add/$', 'create_project'),
+	url(r'^(?P<project_id>\d+)/$', 'indigo.views.project_detail'),
+	url(r'^(?P<project_id>\d+)/edit/$', 'indigo.forms_view.modify_project'),
+	url(r'^add/$', 'indigo.forms_view.create_project'),
 
-  url(r'^$', 'project_list'),
-	url(r'^(?P<filter_type>\w*)/$', 'project_list'),
-	url(r'^(?P<project_id>\d+)/associate/$', 'project_associate'),
+  url(r'^$', 'indigo.views.project_list'),
+	url(r'^(?P<filter_type>\w*)/$', 'indigo.views.project_list'),
+	url(r'^(?P<project_id>\d+)/associate/$', 'indigo.forms_view.project_associate'),
 )
 
-urlpatterns = patterns('indigo.views',
-	url(r'^$', 'index'),
+urlpatterns = patterns('',
+	url(r'^$', 'indigo.views.index'),
 
-	url(r'^registration/$', 'registration'),
+	url(r'^registration/$', 'indigo.forms_view.registration'),
 
 	# Project URLS
 	#url(r'^/projects/(?P<filter_type>\w*)$', 'projects_list'),
