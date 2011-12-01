@@ -17,7 +17,7 @@ class FormsTestCase(unittest.TestCase):
   def test_create_project_2(self):
     data = {
       "name": "23r532tgfkes9jtbso4eitjouvse89mbut8oser9uhtb80ugveshmrb0hr9b0r,89ndubr9xut08xnr,-bds9mrth08rb,esg8tyrs0ehts name",
-      "description": "Blah",
+      "description": "Bla",
       "task_point_timescale": 2
     }
 
