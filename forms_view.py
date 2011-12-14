@@ -239,15 +239,19 @@ def modify_task(request, project_id, iteration_number, task_number):
 def move_task(request, project_id, iteration_number, task_number):
   if request.method == 'POST' and request.user.is_authenticated():
     project = get_object_or_404(Project, pk=project_id)
-    iteration = get_object_or_404(Iteration, number=iteration_number)
-    task = get_object_or_404(Task, number=task_number)
+    iteration = get_object_or_404(Iteration, number=iteration_number, project=project)
+    task = get_object_or_404(Task, number=task_number, iteration=iteration)
 
     form = MoveTaskForm(project, iteration, request.POST)
     if form.is_valid():
       clean_data = form.cleaned_data
 
       if clean_data['other_iteration'] != '-1':
-        task.iteration = Iteration.objects.get(number=clean_data['other_iteration'])
+        newIteration = Iteration.objects.filter(project=project, number=clean_data['other_iteration'])
+        if len(newIteration) == 0:
+          return HttpResponseRedirect('/indigo/')
+        
+        task.iteration = newIteration[0]
         task.save()
         iteration_number = clean_data['other_iteration']
 
