@@ -13,8 +13,8 @@ class CreateIterationForm(forms.Form):
 
   now = datetime.datetime.today()
   year = forms.IntegerField(min_value=now.year, required=True)
-  month = forms.IntegerField(min_value=now.month, required=True)
-  day = forms.IntegerField(min_value=now.day, required=True)
+  month = forms.IntegerField(min_value=0, max_value=12, required=True)
+  day = forms.IntegerField(min_value=0, max_value=31, required=True)
 
 class CreateTaskForm(forms.Form):
   name = forms.CharField(max_length=50, required=True)

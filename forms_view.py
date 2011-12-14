@@ -7,7 +7,7 @@ from django.contrib                 import auth
 from indigo.models                  import Project, Iteration, Task
 from indigo.forms                   import CreateProjectForm, CreateIterationForm, CreateTaskForm, ModifyTaskForm, ModifyProjectForm, MoveTaskForm
 from django.core.context_processors import csrf
-from datetime                       import date
+from datetime                       import date, datetime
 
 import indigo.views
 
@@ -128,7 +128,13 @@ def create_iteration(request, project_id):
 
       if form.is_valid():
         clean_data = form.cleaned_data
+
+        # Validate the date is in the future
+        now = date.today()
         due_date = date(clean_data['year'], clean_data['month'], clean_data['day'])
+        if now >= due_date:
+          return HttpResponseRedirect('/indigo/')
+
         iteration = Iteration(name=clean_data['name'],
                               number=project.next_iteration_number,
                               velocity=0,
