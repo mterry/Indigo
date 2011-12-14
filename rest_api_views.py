@@ -58,6 +58,7 @@ def authenticate(request, user_name):
   context = Context({'token': userToken.token, 'user_id': user.id})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
 
+
 @csrf_exempt
 def invalidate(request, user_id):
   if request.method != 'POST':
@@ -87,6 +88,7 @@ def invalidate(request, user_id):
 
   return HttpResponse(status=204)
 
+
 @csrf_exempt
 def project_list(request, filter_type):
   if request.method != 'GET':
@@ -97,7 +99,7 @@ def project_list(request, filter_type):
 
   get = request.GET
   if filter_type == 'user':
-    if 'user_id' not in get or get['user_id'] == '':
+    if 'user_id' not in get or get['user_id'] == '' or not is_int(get['user_id']):
       return HttpResponse(status=400)
 
     user = User.objects.filter(id=get['user_id'])
@@ -117,6 +119,7 @@ def project_list(request, filter_type):
   context = Context({'projects': projects})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
 
+
 @csrf_exempt
 def project_detail(request, project_id):
   if request.method != 'GET':
@@ -131,6 +134,7 @@ def project_detail(request, project_id):
   template = loader.get_template('rest_api/project_detail.xml')
   context = Context({'project': project})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
+
 
 @csrf_exempt
 def iteration_list(request, project_id):
@@ -149,6 +153,7 @@ def iteration_list(request, project_id):
   context = Context({'iterations': iterations})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
 
+
 @csrf_exempt
 def iteration_detail(request, iteration_id):
   if request.method != 'GET':
@@ -163,6 +168,7 @@ def iteration_detail(request, iteration_id):
   template = loader.get_template('rest_api/iteration_detail.xml')
   context = Context({'iteration': iteration})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
+
 
 @csrf_exempt
 def task_list(request, iteration_id):
@@ -181,6 +187,7 @@ def task_list(request, iteration_id):
   context = Context({'tasks': tasks})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
 
+
 @csrf_exempt
 def task_detail(request, task_id):
   if request.method != 'GET':
@@ -196,6 +203,7 @@ def task_detail(request, task_id):
   context = Context({'task': task})
   return HttpResponse(template.render(context), status=200, mimetype='text/xml')
 
+
 @csrf_exempt
 def task_create(request, iteration_id):
   if request.method != 'POST':
@@ -205,6 +213,9 @@ def task_create(request, iteration_id):
   post = request.POST
   paramNames = ['user_id', 'token', 'task_name', 'task_description', 'task_points']
   if not verifyParams(paramNames, post):
+    return HttpResponse(status=400)
+
+  if not is_int(post['user_id']) or not is_int(post['task_points']):
     return HttpResponse(status=400)
 
   # Verify that this user has the right token and they can create a new task for this iteration
@@ -255,6 +266,7 @@ def task_create(request, iteration_id):
   context = Context({'task_id': newTask.id})
   return HttpResponse(template.render(context), status=201, mimetype='text/xml')
 
+
 @csrf_exempt
 def task_update(request, task_id):
   if request.method != 'POST':
@@ -264,6 +276,9 @@ def task_update(request, task_id):
   post = request.POST
   paramNames = ['user_id', 'token', 'task_name', 'task_description', 'task_points', 'task_assigned_to', 'task_iteration', 'task_closed']
   if not verifyParams(paramNames, post):
+    return HttpResponse(status=400)
+
+  if not is_int(post['user_id']) or not is_int(post['task_points']) or not is_int(post['task_assigned_to']) or not is_int(post['task_iteration']):
     return HttpResponse(status=400)
 
   if not post['task_closed'] == 'True' and not post['task_closed'] == 'False':
@@ -341,3 +356,10 @@ def verifyParams(paramNames, paramsDict):
       return False
 
   return True
+
+def is_int(s):
+  try:
+    int(s)
+    return True
+  except ValueError:
+    return False
