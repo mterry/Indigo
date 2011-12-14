@@ -27,7 +27,7 @@ def registration(request):
                     clean_data['password1']
                   )
         newUser.is_active = True
-        newUser.save();
+        newUser.save()
 
         return HttpResponseRedirect('/indigo/login/')
       else:

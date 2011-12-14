@@ -1,6 +1,7 @@
 from datetime import date
 from django.db import models
 from django.contrib.auth.models import User
+import random
 
 class Project(models.Model):
   name = models.CharField(max_length=50)
@@ -54,3 +55,31 @@ class Task(models.Model):
 
   def is_closed(self):
     return closed
+
+class UserToken(models.Model):
+  user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+  token = models.CharField(max_length=20)
+
+  def generate_token(self):
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+
+    # Length of character list
+    chars_length = len(chars) - 1
+
+    random.seed()
+
+		# Start our string
+    newToken = chars[random.randint(0, chars_length)]
+	   
+		# Generate random string
+    i = 1
+    while not i == 20:
+      #Grab a random character from our list
+			c = chars[random.randint(0, chars_length)]
+		   
+			# Make sure the same two characters don't appear next to each other
+			if not c == newToken[i - 1]:
+				newToken += c
+				i += 1
+
+    self.token = newToken

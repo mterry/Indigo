@@ -1,0 +1,16 @@
+<iteration>
+  <name>{{ iteration.name }}</name>
+  <number>{{ iteration.number }}</number>
+  <description>{{ iteration.description }}</description>
+  <velocity>{{ iteration.velocity }}</velocity>
+  <project>
+    <id>{{ iteration.project.id }}</id>
+    <name>{{ iteration.project.name }}</name>
+  </project>
+  <due_date>
+    <day>{{ iteration.due_date.day }}</id>
+    <month>{{ iteration.due_date.month }}</id>
+    <year>{{ iteration.due_date.year }}</name>
+  </due_date>
+  <finished>{{ iteration.finished }}</finished>
+</iteration>

@@ -60,6 +60,6 @@ def projects_by_username(name):
   #return get_list_or_404(Project, collaborators=user).order_by('name')
   return Project.objects.filter(collaborators=user).order_by('name')
 
-def render_base(request, params, viewName):
+def render_base(request, params, templateName):
   # Pass the RequestContext so we can get context in our templates for auth and media stuff
-  return render_to_response(viewName, params, context_instance=RequestContext(request))
+  return render_to_response(templateName, params, context_instance=RequestContext(request))

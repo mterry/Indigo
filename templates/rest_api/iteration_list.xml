@@ -1,0 +1,9 @@
+<iterations>
+{% for iteration in iterations %}
+  <iteration>
+    <id>{{ iteration.id }}</id>
+    <number>{{ iteration.number }}</number>
+    <name>{{ iteration.name }}</name>
+  </iteration>
+{% endfor %}
+</iterations>

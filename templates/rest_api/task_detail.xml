@@ -1,0 +1,16 @@
+<task>
+  <name>{{ task.name }}</name>
+  <number>{{ task.number }}</number>
+  <description>{{ task.description }}</description>
+  <points>{{ task.points }}</points>
+  <closed>{{ task.closed }}</closed>
+  <assigned_to>
+    <id>{{ task.assigned_to.id }}</id>
+    <name>{{ task.assigned_to.username }}</name>
+  </assigned_to>
+  <iteration>
+    <id>{{ task.iteration.id }}</id>
+    <number>{{ task.iteration.number }}</number>
+    <name>{{ task.iteration.name }}</name>
+  </iteration>
+</task>

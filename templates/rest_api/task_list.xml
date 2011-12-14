@@ -1,0 +1,9 @@
+<tasks>
+{% for task in tasks %}
+  <task>
+    <id>{{ task.id }}</id>
+    <number>{{ task.number }}</number>
+    <name>{{ task.name }}</name>
+  </task>
+{% endfor %}
+</tasks>

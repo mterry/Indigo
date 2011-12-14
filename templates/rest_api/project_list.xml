@@ -1,0 +1,8 @@
+<projects>
+{% for project in projects %}
+  <project>
+    <id>{{ project.id }}</id>
+    <name>{{ project.name }}</name>
+  </project>
+{% endfor %}
+</projects>

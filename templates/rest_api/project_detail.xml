@@ -1,0 +1,18 @@
+<project>
+  <name>{{ project.name }}</name>
+  <description>{{ project.description }}</description>
+  <velocity>{{ project.velocity }}</velocity>
+  <task_point_timescale>{{ project.task_point_timescale }}</task_point_timescale>
+  <collaborators>
+  {% for user in project.collaborators.all %}
+   <user>
+     <id>{{ user.id }}</id>
+     <name>{{ user.username }}</name>
+   </user>
+  {% endfor %}
+  </collaborators>
+  <owner>
+    <id>{{ project.owner.id }}</id>
+    <name>{{ project.owner.username }}</name>
+  </owner>
+</project>
